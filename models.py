@@ -67,6 +67,8 @@ class ImageEncoder(nn.Module):
     def forward(self, x):
         return self.model(x)
     
+
+    
 class TextEncoder(nn.Module):
     def __init__(self, model_name, pretrained, trainable):
         super().__init__()
