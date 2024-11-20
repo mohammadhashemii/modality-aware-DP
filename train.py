@@ -20,7 +20,6 @@ from opacus.accountants.utils import get_noise_multiplier
 
 from fastDP import PrivacyEngine
 
-import timm
 from models import ImageClassifier, CLIPModel, ImageEncoder
 from transformers import DistilBertTokenizer
 
@@ -45,6 +44,9 @@ class PrivateModel:
     def load_model(self, modality="all"):
 
         self.modality = modality
+
+        if modality == "text":
+            print("TODO")
 
         if modality == "all":
             self.model = CLIPModel().to(self.device)
