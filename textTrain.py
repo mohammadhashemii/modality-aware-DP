@@ -141,4 +141,4 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
         print(f"Validation Loss: {val_loss / len(val_loader):.4f}, Accuracy: {correct / len(val_loader.dataset):.4f}")
 
-train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=10)
+train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=30)
