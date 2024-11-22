@@ -9,5 +9,5 @@ cd /scratch/ycai222/modality_aware_DP
 conda activate dp_clip
  
 echo '====start running===='
-python textTrainDP.py >> ./logs/epch30_text_finetune.log 2>> ./logs/epch30_text_finetune.err
+python textTrainDP.py >> ./logs/epch30_textDP_finetune.log 2>> ./logs/epch30_textDP_finetune.err
 echo '=====end======='
