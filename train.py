@@ -9,18 +9,15 @@ from CLIP.clip import clip
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision import datasets
+from torchvision import datasets, transforms
 
 from tqdm import tqdm
 
-import opacus
-from opacus.accountants import RDPAccountant
 from opacus.validators import ModuleValidator
 from opacus.accountants.utils import get_noise_multiplier
-
 from fastDP import PrivacyEngine
 
-from models import ImageClassifier, CLIPModel, ImageEncoder
+from models import CLIPModel, ImageEncoder
 from transformers import DistilBertTokenizer
 
 from dataset import FashionIndioDataset
@@ -52,7 +49,6 @@ class PrivateModel:
             self.model = CLIPModel().to(self.device)
 
         elif modality == "image":
-            # self.model = ImageClassifier(num_classes=self.num_classes).to(self.device)
             self.model = ImageEncoder(model_name=self.configs.image_encoder,
                                       num_classes=self.num_classes, 
                                       pretrained=self.configs.pretrained, 
@@ -73,30 +69,32 @@ class PrivateModel:
 
     def load_data(self, dataset):
         
-        
-        _, preprocess = clip.load("ViT-B/32")
-        cifar10 = datasets.CIFAR10(os.path.expanduser("data/cifar10/"), transform=preprocess, download=False)
+        transformation = transforms.Compose([
+                        transforms.Resize(224),
+                        transforms.ToTensor(),
+                        transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5))])
         
         if dataset == "cifar10":
+            cifar10 = datasets.CIFAR10(os.path.expanduser("data/cifar10/"), transform=transformation, download=False)
             training_data = datasets.CIFAR10(
             root="data/cifar10",
             train=True,
             download=False,
-            transform=preprocess)
+            transform=transformation)
         
             test_data = datasets.CIFAR10(
                 root="data/cifar10",
                 train=False,
                 download=False,
-                transform=preprocess
+                transform=transformation
             )
             self.training_size=len(training_data)
             self.testing_size=len(test_data)
             self.classes = cifar10.classes
             self.num_classes = len(self.classes)
 
-        train_dataloader = DataLoader(training_data, batch_size=self.configs.bs, shuffle=True)
-        test_dataloader = DataLoader(test_data, batch_size=self.configs.bs, shuffle=True)
+        train_dataloader = DataLoader(training_data, batch_size=self.configs.mini_bs, shuffle=True)
+        test_dataloader = DataLoader(test_data, batch_size=self.configs.mini_bs, shuffle=True)
         
 
         if dataset == "fashion_indio":
@@ -126,19 +124,19 @@ class PrivateModel:
 
                 if split == 'train':
                     data = FashionIndioDataset(list_image_path, list_label)
-                    train_dataloader = DataLoader(data, batch_size=self.configs.bs, shuffle=True)
+                    train_dataloader = DataLoader(data, batch_size=self.configs.mini_bs, shuffle=True)
                     self.training_size=len(data)
 
                 elif split == 'test':
                     data = FashionIndioDataset(list_image_path, list_label)
-                    test_dataloader = DataLoader(data, batch_size=self.configs.bs, shuffle=True)
+                    test_dataloader = DataLoader(data, batch_size=self.configs.mini_bs, shuffle=True)
                     self.testing_size=len(data)
 
 
             self.classes = {cls: i for i, cls in enumerate(unique_labels)}
             self.num_classes = len(unique_labels)
     
-        self.n_acc_steps = 1000 // args.bs # gradient accumulation steps
+        self.n_acc_steps = self.configs.bs // self.configs.mini_bs # gradient accumulation steps
         
         return train_dataloader, test_dataloader
     
@@ -146,53 +144,38 @@ class PrivateModel:
     def set_optimizer(self, epsilon=10, C=1.0):
 
         if self.configs.private:
-            self.delta = 1/2/self.training_size
+            self.delta = 1e-5
             self.C = C
             print("Epsilon: ", self.configs.epsilon)
             print("Delta: ", self.delta)
             print("Clip Param C: ", self.C)
 
-            self.accountant = RDPAccountant()
-            self.sample_rate = self.configs.bs / self.training_size
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.configs.lr)
-
-            # self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.configs.lr, weight_decay=self.configs.wd, momentum=0.9)
     
             noise_param = get_noise_multiplier(target_epsilon = self.configs.epsilon,
                                                 target_delta = 1e-5,
-                                                sample_rate = self.sample_rate,
+                                                sample_rate = self.configs.bs / self.training_size,
                                                 epochs = self.configs.epochs,
                                                 accountant="rdp")
 
             self.noise_scale = noise_param
             print("Noise Scale: ", self.noise_scale)
-
             self.privacy_engine = PrivacyEngine(self.model,
-                                            batch_size=self.configs.bs,
+                                            batch_size=self.configs.mini_bs,
                                             sample_size=self.training_size,
                                             noise_multiplier=self.noise_scale,
                                             epochs=self.configs.epochs,
-                                            clipping_fn='automatic', # Abadi
-                                            clipping_mode="MixOpt", # ghost
-                                            origin_params=None,
-                                            clipping_style="all-layer") # layer-wise
-
+                                            max_grad_norm=self.C,
+                                            clipping_fn='automatic',
+                                            clipping_mode="MixOpt",
+                                            clipping_style="all-layer",
+                                            origin_params=['patch_embed.proj.bias'])
 
             self.privacy_engine.attach(self.optimizer)    
 
         else:
 
             self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.configs.lr, momentum=0.9, weight_decay=self.configs.wd)
-
-    def compute_noise_multiplier(self, epsilon, delta, num_samples, batch_size, num_epochs):
-
-        noise_multiplier = opacus.accountants.utils.get_noise_multiplier(target_epsilon=epsilon,
-                                                                        target_delta=delta,
-                                                                        sample_rate=batch_size / num_samples,
-                                                                        epochs=num_epochs,
-                                                                        accountant="rdp")
-
-        return noise_multiplier
     
     def zeroshot_classifier(self, template):
         with torch.no_grad():
@@ -230,7 +213,7 @@ class PrivateModel:
 
                     correct_num = correct_num + num
 
-            print ('Accuracy Rate: {}'.format(correct_num/len(test_dataloader)/self.configs.bs))
+            print ('Accuracy Rate: {}'.format(correct_num/len(test_dataloader)/self.configs.mini_bs))
 
         elif self.modality == "image":
             for images, labels in tqdm(test_dataloader):
@@ -242,10 +225,10 @@ class PrivateModel:
 
                     correct_num = correct_num + num
 
-            print ('Accuracy Rate: {}'.format(correct_num/len(test_dataloader)/self.configs.bs))
+            print ('Accuracy Rate: {}'.format(correct_num/len(test_dataloader)/self.configs.mini_bs))
         
     
-    def train(self, train_dataloader, test_dataloader, template, loss_report_freq=1000):
+    def train(self, train_dataloader, test_dataloader, template):
         print(f"Num Epochs: {self.configs.epochs}")
         
         
@@ -270,7 +253,6 @@ class PrivateModel:
                     total_loss.backward()
                     if (batch_ct % self.n_acc_steps == 0) or (batch_ct == len(train_dataloader)):
                         self.optimizer.step()
-                        self.optimizer.zero_grad()
 
                     
                 elif self.modality == "text":
@@ -284,7 +266,6 @@ class PrivateModel:
                     total_loss.backward()
                     self.optimizer.step()
 
-            
                 batch_ct += 1
 
             if self.configs.private:
@@ -294,7 +275,7 @@ class PrivateModel:
 
                 print(f"Privacy budget spent: (ε = {eps_rdp:.2f}, δ = {self.delta}) for α = {alpha_rdp}")
         
-            if epoch % 2 == 0 :
+            if epoch % 1 == 0 :
                 print(f"****the {epoch}^th epoch *****")
                 print("**** on training set *****")
                 self.test(train_dataloader, template)
@@ -304,13 +285,17 @@ class PrivateModel:
                 print("*************************")
 
                 # save the model weights
+                if self.modality == "image":
+                    model_name = self.configs.image_encoder
+                elif self.modality == "text":
+                    model_name = self.configs.text_encoder
                 
                 if self.configs.private:
                     save_dir = "saved_ours/dp"
-                    checkpoint_name = f"{save_dir}/{self.configs.modality}_{self.configs.dataset}_dp_eps{self.configs.epsilon}_epochs{self.configs.epochs}_lr{self.configs.lr}_bs{self.configs.bs}_{self.configs.trainable}.pth"
+                    checkpoint_name = f"{save_dir}/{self.configs.modality}_{model_name}_{self.configs.dataset}_dp_eps{self.configs.epsilon}_epochs{self.configs.epochs}_lr{self.configs.lr}_bs{self.configs.mini_bs}_{self.configs.trainable}.pth"
                 else:
                     save_dir = "saved_ours/nondp"
-                    checkpoint_name = f"{save_dir}/{self.configs.modality}_{self.configs.dataset}_epochs{self.configs.epochs}_lr{self.configs.lr}_bs{self.configs.bs}_{self.configs.trainable}.pth"
+                    checkpoint_name = f"{save_dir}/{self.configs.modality}_{model_name}_{self.configs.dataset}_epochs{self.configs.epochs}_lr{self.configs.lr}_bs{self.configs.mini_bs}_{self.configs.trainable}.pth"
 
                 self.save_model(checkpoint_name)
                 
@@ -354,7 +339,7 @@ def train_wrapper(**kwargs):
         private_model = PrivateModel(configs=configs, template=template)       
         train_dataloader, test_dataloader = private_model.load_data(configs.dataset)
         private_model.load_model(modality=configs.modality)
-        private_model.set_optimizer(epsilon=configs.epsilon, C=1.0)
+        private_model.set_optimizer(epsilon=configs.epsilon, C=configs.clip_norm)
 
         print("**********")
         private_model.train(train_dataloader, test_dataloader, template)
@@ -366,7 +351,8 @@ if __name__ == "__main__":
 
     # general training arguments
     parser.add_argument('--dataset', type=str, choices=["cifar10", "fashion_indio"])
-    parser.add_argument('--bs', type=int, default=64, help="Batch size for training")
+    parser.add_argument('--bs', type=int, default=1000, help="logical batch size")
+    parser.add_argument('--mini_bs', type=int, default=50, help="Batch size for training")
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate")
     parser.add_argument('--wd', type=float, default=0.0, help="Weight decay")
     parser.add_argument('--epochs', type=int, default=10, help="Number of epochs")
@@ -375,9 +361,9 @@ if __name__ == "__main__":
 
     # differential privacy arguments
     parser.add_argument('--epsilon', type=float, default=10, help="epsilon value for DP")
+    parser.add_argument('--clip_norm', type=float, default=1.0, help="maximum clipping norm")
     parser.add_argument('--modality', type=str, default="image", choices=["image", "text", "all"])
     parser.add_argument('--private', action='store_true', help="Enable DP training")
-    
 
     # extra params
     parser.add_argument('--config', type=str, default="configs/finetune_image_encoder.yaml", help="Path to the configuration file")

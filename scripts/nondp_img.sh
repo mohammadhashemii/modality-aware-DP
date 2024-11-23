@@ -12,22 +12,23 @@ echo '====start running===='
 
 
 dataset=cifar10
-modality=image
-image_encoder=resnet18
+image_encoder=vit_base_patch16_224
 epochs=20
-lr=1e-1
+lr=0.0005
 trainable=all-layers
-bs=64
+bs=1000
+mini_bs=50
 
 python train.py \
 --dataset $dataset \
---modality $modality \
+--modality image \
 --epochs $epochs \
 --lr $lr \
 --trainable $trainable \
 --bs $bs \
->> ./logs/nondp/image_${dataset}_${image_encoder}_epochs${epochs}_lr${lr}_bs${bs}_all_layers.log \
-2>> ./logs/nondp/image_${dataset}_${image_encoder}_epochs${epochs}_lr${lr}_bs${bs}_all_layers.err
+--mini_bs $mini_bs \
+>> ./logs/11-22/nondp/image_${dataset}_${image_encoder}_epochs${epochs}_lr${lr}_bs${mini_bs}_all_layers.log \
+2>> ./logs/11-22/nondp/image_${dataset}_${image_encoder}_epochs${epochs}_lr${lr}_bs${mini_bs}_all_layers.err
 
 
 echo '=====end======='
