@@ -9,6 +9,10 @@ from tqdm import tqdm
 from opacus import PrivacyEngine
 from opacus.utils.batch_memory_manager import BatchMemoryManager
 import numpy as np
+import sys
+
+log_file = open('dp_last_layer_epshalf_log.txt','w')
+sys.stdout = log_file
 
 train_path = 'Corona_NLP_train.csv'
 test_path = 'Corona_NLP_test.csv'
@@ -107,17 +111,17 @@ model = SentimentClassifier(model_name, num_classes)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
 
-optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=5e-5)
+optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
-EPSILON = 10.0
+EPSILON = 0.5
 DELTA = 1e-5
 MAX_GRAD_NORM = 1.0
 EPOCHS = 30
-MAX_PHYSICAL_BATCH_SIZE = 8
+MAX_PHYSICAL_BATCH_SIZE = 32
 LOGGING_INTERVAL = 200
 
-privacy_engine = PrivacyEngine()
+privacy_engine = PrivacyEngine(accountant='rdp')
 
 model, optimizer, train_loader = privacy_engine.make_private_with_epsilon(
     module=model,
@@ -165,7 +169,7 @@ def train_model_with_dp(model, train_loader, val_loader, criterion, optimizer, e
                     eps = privacy_engine.get_epsilon(DELTA)
 
                     print(
-                        f"Epoch: {epoch} | Step: {step} | Train Loss: {train_loss:.4f} | ɛ: {eps:.2f}"
+                        f"Epoch: {epoch} | Step: {step} | Train Loss: {train_loss:.4f} | eps: {eps:.2f}"
                     )
 
         train_loss = np.mean(train_losses)
@@ -213,3 +217,4 @@ def evaluate_model(model, test_loader):
 
 train_model_with_dp(model, train_loader, val_loader, criterion, optimizer, EPOCHS)
 
+log_file.close()
