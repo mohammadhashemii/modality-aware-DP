@@ -11,7 +11,7 @@ from opacus.utils.batch_memory_manager import BatchMemoryManager
 import numpy as np
 import sys
 
-log_file = open('dp_last_layer_epshalf_log.txt','w')
+log_file = open('dp_last_layer_epshalf_log.txt', 'w')
 sys.stdout = log_file
 
 train_path = 'Corona_NLP_train.csv'
@@ -56,7 +56,7 @@ class SentimentDataset(Dataset):
         }
 
 max_len = 128
-batch_size = 32
+batch_size = 128
 
 train_texts, val_texts, train_labels, val_labels = train_test_split(
     train_df['OriginalTweet'].values,
@@ -88,7 +88,6 @@ class TextEncoder(nn.Module):
             else:
                 param.requires_grad = False
 
-        # CLS token hidden representation
         self.target_token_idx = 0
 
     def forward(self, input_ids, attention_mask):
@@ -115,11 +114,14 @@ optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters
 criterion = nn.CrossEntropyLoss()
 
 EPSILON = 0.5
-DELTA = 1e-5
 MAX_GRAD_NORM = 1.0
 EPOCHS = 30
-MAX_PHYSICAL_BATCH_SIZE = 32
+MAX_PHYSICAL_BATCH_SIZE = 128
 LOGGING_INTERVAL = 200
+
+training_size = len(train_dataset)
+DELTA = 1 / (2 * training_size)
+print(f"Calculated DELTA: {DELTA}")
 
 privacy_engine = PrivacyEngine(accountant='rdp')
 
@@ -135,7 +137,6 @@ model, optimizer, train_loader = privacy_engine.make_private_with_epsilon(
 
 def train_model_with_dp(model, train_loader, val_loader, criterion, optimizer, epochs):
     for epoch in range(1, epochs + 1):
-        
         model.train()
         train_losses = []
         correct_train = 0

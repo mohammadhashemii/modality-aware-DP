@@ -1,0 +1,122 @@
+Calculated DELTA: 1.3498555654544964e-05
+Epoch: 1 | Step: 200 | Train Loss: 1.5776 | eps: 0.11
+Epoch: 1 | Step: 400 | Train Loss: 1.5645 | eps: 0.12
+Epoch 1: Train Loss: 1.5623 | Train Accuracy: 28.94%
+Epoch 1: Validation Accuracy: 30.73%
+Epoch: 2 | Step: 200 | Train Loss: 1.5147 | eps: 0.13
+Epoch: 2 | Step: 400 | Train Loss: 1.5057 | eps: 0.13
+Epoch 2: Train Loss: 1.5036 | Train Accuracy: 31.73%
+Epoch 2: Validation Accuracy: 34.43%
+Epoch: 3 | Step: 200 | Train Loss: 1.4553 | eps: 0.14
+Epoch: 3 | Step: 400 | Train Loss: 1.4444 | eps: 0.15
+Epoch 3: Train Loss: 1.4426 | Train Accuracy: 34.93%
+Epoch 3: Validation Accuracy: 36.69%
+Epoch: 4 | Step: 200 | Train Loss: 1.4223 | eps: 0.16
+Epoch: 4 | Step: 400 | Train Loss: 1.4204 | eps: 0.17
+Epoch 4: Train Loss: 1.4197 | Train Accuracy: 36.46%
+Epoch 4: Validation Accuracy: 38.36%
+Epoch: 5 | Step: 200 | Train Loss: 1.4103 | eps: 0.18
+Epoch: 5 | Step: 400 | Train Loss: 1.4103 | eps: 0.19
+Epoch 5: Train Loss: 1.4103 | Train Accuracy: 37.52%
+Epoch 5: Validation Accuracy: 39.16%
+Epoch: 6 | Step: 200 | Train Loss: 1.4105 | eps: 0.20
+Epoch: 6 | Step: 400 | Train Loss: 1.4111 | eps: 0.21
+Epoch 6: Train Loss: 1.4105 | Train Accuracy: 37.81%
+Epoch 6: Validation Accuracy: 39.43%
+Epoch: 7 | Step: 200 | Train Loss: 1.4182 | eps: 0.22
+Epoch: 7 | Step: 400 | Train Loss: 1.4154 | eps: 0.22
+Epoch 7: Train Loss: 1.4159 | Train Accuracy: 37.56%
+Epoch 7: Validation Accuracy: 38.61%
+Epoch: 8 | Step: 200 | Train Loss: 1.4099 | eps: 0.23
+Epoch: 8 | Step: 400 | Train Loss: 1.4068 | eps: 0.24
+Epoch 8: Train Loss: 1.4069 | Train Accuracy: 38.22%
+Epoch 8: Validation Accuracy: 39.82%
+Epoch: 9 | Step: 200 | Train Loss: 1.4021 | eps: 0.25
+Epoch: 9 | Step: 400 | Train Loss: 1.4037 | eps: 0.26
+Epoch 9: Train Loss: 1.4036 | Train Accuracy: 38.56%
+Epoch 9: Validation Accuracy: 39.72%
+Epoch: 10 | Step: 200 | Train Loss: 1.4155 | eps: 0.27
+Epoch: 10 | Step: 400 | Train Loss: 1.4215 | eps: 0.27
+Epoch 10: Train Loss: 1.4209 | Train Accuracy: 38.10%
+Epoch 10: Validation Accuracy: 39.80%
+Epoch: 11 | Step: 200 | Train Loss: 1.4089 | eps: 0.28
+Epoch: 11 | Step: 400 | Train Loss: 1.4155 | eps: 0.29
+Epoch 11: Train Loss: 1.4163 | Train Accuracy: 38.66%
+Epoch 11: Validation Accuracy: 39.46%
+Epoch: 12 | Step: 200 | Train Loss: 1.4000 | eps: 0.29
+Epoch: 12 | Step: 400 | Train Loss: 1.4096 | eps: 0.30
+Epoch 12: Train Loss: 1.4120 | Train Accuracy: 39.22%
+Epoch 12: Validation Accuracy: 39.55%
+Epoch: 13 | Step: 200 | Train Loss: 1.4266 | eps: 0.31
+Epoch: 13 | Step: 400 | Train Loss: 1.4287 | eps: 0.31
+Epoch 13: Train Loss: 1.4280 | Train Accuracy: 39.46%
+Epoch 13: Validation Accuracy: 41.25%
+Epoch: 14 | Step: 200 | Train Loss: 1.4447 | eps: 0.32
+Epoch: 14 | Step: 400 | Train Loss: 1.4459 | eps: 0.33
+Epoch 14: Train Loss: 1.4469 | Train Accuracy: 39.32%
+Epoch 14: Validation Accuracy: 40.72%
+Epoch: 15 | Step: 200 | Train Loss: 1.4539 | eps: 0.33
+Epoch: 15 | Step: 400 | Train Loss: 1.4515 | eps: 0.34
+Epoch 15: Train Loss: 1.4513 | Train Accuracy: 39.18%
+Epoch 15: Validation Accuracy: 41.84%
+Epoch: 16 | Step: 200 | Train Loss: 1.4423 | eps: 0.34
+Epoch: 16 | Step: 400 | Train Loss: 1.4360 | eps: 0.35
+Epoch 16: Train Loss: 1.4365 | Train Accuracy: 39.46%
+Epoch 16: Validation Accuracy: 41.86%
+Epoch: 17 | Step: 200 | Train Loss: 1.4287 | eps: 0.36
+Epoch: 17 | Step: 400 | Train Loss: 1.4206 | eps: 0.36
+Epoch 17: Train Loss: 1.4219 | Train Accuracy: 39.97%
+Epoch 17: Validation Accuracy: 42.15%
+Epoch: 18 | Step: 200 | Train Loss: 1.4312 | eps: 0.37
+Epoch: 18 | Step: 400 | Train Loss: 1.4270 | eps: 0.37
+Epoch 18: Train Loss: 1.4258 | Train Accuracy: 40.10%
+Epoch 18: Validation Accuracy: 42.69%
+Epoch: 19 | Step: 200 | Train Loss: 1.4206 | eps: 0.38
+Epoch: 19 | Step: 400 | Train Loss: 1.4273 | eps: 0.38
+Epoch 19: Train Loss: 1.4273 | Train Accuracy: 40.38%
+Epoch 19: Validation Accuracy: 42.10%
+Epoch: 20 | Step: 200 | Train Loss: 1.4300 | eps: 0.39
+Epoch: 20 | Step: 400 | Train Loss: 1.4212 | eps: 0.39
+Epoch 20: Train Loss: 1.4242 | Train Accuracy: 40.74%
+Epoch 20: Validation Accuracy: 42.03%
+Epoch: 21 | Step: 200 | Train Loss: 1.4373 | eps: 0.40
+Epoch: 21 | Step: 400 | Train Loss: 1.4368 | eps: 0.41
+Epoch 21: Train Loss: 1.4372 | Train Accuracy: 40.46%
+Epoch 21: Validation Accuracy: 43.05%
+Epoch: 22 | Step: 200 | Train Loss: 1.4208 | eps: 0.41
+Epoch: 22 | Step: 400 | Train Loss: 1.4268 | eps: 0.42
+Epoch 22: Train Loss: 1.4280 | Train Accuracy: 40.45%
+Epoch 22: Validation Accuracy: 44.22%
+Epoch: 23 | Step: 200 | Train Loss: 1.4196 | eps: 0.42
+Epoch: 23 | Step: 400 | Train Loss: 1.4191 | eps: 0.43
+Epoch 23: Train Loss: 1.4165 | Train Accuracy: 40.97%
+Epoch 23: Validation Accuracy: 43.63%
+Epoch: 24 | Step: 200 | Train Loss: 1.4154 | eps: 0.43
+Epoch: 24 | Step: 400 | Train Loss: 1.4193 | eps: 0.44
+Epoch 24: Train Loss: 1.4210 | Train Accuracy: 41.34%
+Epoch 24: Validation Accuracy: 43.17%
+Epoch: 25 | Step: 200 | Train Loss: 1.4383 | eps: 0.44
+Epoch: 25 | Step: 400 | Train Loss: 1.4389 | eps: 0.44
+Epoch 25: Train Loss: 1.4419 | Train Accuracy: 41.42%
+Epoch 25: Validation Accuracy: 43.08%
+Epoch: 26 | Step: 200 | Train Loss: 1.4521 | eps: 0.45
+Epoch: 26 | Step: 400 | Train Loss: 1.4551 | eps: 0.45
+Epoch 26: Train Loss: 1.4541 | Train Accuracy: 41.10%
+Epoch 26: Validation Accuracy: 43.34%
+Epoch: 27 | Step: 200 | Train Loss: 1.4315 | eps: 0.46
+Epoch: 27 | Step: 400 | Train Loss: 1.4431 | eps: 0.46
+Epoch 27: Train Loss: 1.4414 | Train Accuracy: 41.40%
+Epoch 27: Validation Accuracy: 43.63%
+Epoch: 28 | Step: 200 | Train Loss: 1.4533 | eps: 0.47
+Epoch: 28 | Step: 400 | Train Loss: 1.4566 | eps: 0.47
+Epoch 28: Train Loss: 1.4541 | Train Accuracy: 41.29%
+Epoch 28: Validation Accuracy: 43.25%
+Epoch: 29 | Step: 200 | Train Loss: 1.4636 | eps: 0.48
+Epoch: 29 | Step: 400 | Train Loss: 1.4645 | eps: 0.48
+Epoch 29: Train Loss: 1.4651 | Train Accuracy: 41.66%
+Epoch 29: Validation Accuracy: 43.83%
+Epoch: 30 | Step: 200 | Train Loss: 1.4763 | eps: 0.49
+Epoch: 30 | Step: 400 | Train Loss: 1.4641 | eps: 0.49
+Epoch 30: Train Loss: 1.4641 | Train Accuracy: 41.21%
+Epoch 30: Validation Accuracy: 43.66%
+Test Accuracy: 42.34%
