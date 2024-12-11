@@ -1,4 +1,4 @@
-from CLIP.clip import clip
+from clip import clip
 from PIL import Image
 
 _, preprocess = clip.load("ViT-B/32")

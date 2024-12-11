@@ -1,17 +1,24 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F  # For softmax and cross-entropy
 import timm
 from transformers import DistilBertModel, DistilBertConfig, DistilBertTokenizer
 
-
 class CLIPModel(nn.Module):
-    def __init__(self,temperature, image_embedding, text_embedding,):
-        super().__init__()
-        self.image_encoder = ImageEncoder()
-        self.text_encoder = TextEncoder()
-        self.image_projection = ProjectionHead(embedding_dim=image_embedding)
-        self.text_projection = ProjectionHead(embedding_dim=text_embedding)
-        self.temperature = temperature
+    def __init__(self, temperature, image_embedding, text_embedding, num_classes, model_name, pretrained, trainable):
+        super(CLIPModel, self).__init__()
+        self.temperature = nn.Parameter(torch.tensor(temperature))
+        self.image_encoder = ImageEncoder(
+            num_classes=num_classes,
+            model_name=model_name,
+            pretrained=pretrained,
+            trainable=trainable
+        )
+        self.text_encoder = TextEncoder(
+            model_name="distilbert-base-uncased",  # or another model of your choice
+            pretrained=pretrained,
+            trainable=trainable
+        )
 
     def forward(self, batch):
         # Getting Image and Text Features
@@ -30,8 +37,8 @@ class CLIPModel(nn.Module):
         targets = F.softmax(
             (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
         )
-        texts_loss = cross_entropy(logits, targets, reduction='none')
-        images_loss = cross_entropy(logits.T, targets.T, reduction='none')
+        texts_loss = F.cross_entropy(logits, targets, reduction='none')
+        images_loss = F.cross_entropy(logits.T, targets.T, reduction='none')
         loss =  (images_loss + texts_loss) / 2.0 # shape: (batch_size)
         return loss.mean()
 

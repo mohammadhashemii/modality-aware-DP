@@ -5,7 +5,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import argparse
 import time
-from CLIP.clip import clip
+from clip import clip
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader

@@ -7,6 +7,8 @@
 .logs/*
 .CLIP/
 .saved_ours/*
+old/
+fashion_indio/
 
 
 ### macOS ###

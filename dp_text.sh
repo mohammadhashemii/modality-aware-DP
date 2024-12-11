@@ -5,7 +5,7 @@
 bash
 conda init bash >/dev/null 2>&1
 source ~/.bashrc
-cd /scratch/ycai222/modality_aware_DP
+cd /scratch/ycai222/modality-aware-DP
 conda activate dp_clip
  
 echo '====start running===='
